@@ -1,0 +1,21 @@
+{
+  "name": "sync-page-example",
+  "version": "1.0.0",
+  "description": "An example of Twilio Sync usage for co-browsing",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "keywords": [
+    "Twilio",
+    "Sync",
+    "DSync"
+  ],
+  "author": "Anton Purin",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ngrok": "^3.2.7",
+    "twilio": "^3.39.1"
+  }
+}

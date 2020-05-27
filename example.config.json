@@ -1,0 +1,7 @@
+{
+    "accountSid": "ACxxx",
+    "serviceSid": "ISxxx",
+    "signingKey": "SKxxx",
+    "signingKeySecret": "xxx",
+    "port": 8080
+}

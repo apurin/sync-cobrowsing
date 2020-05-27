@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Twilio Sync</title>
+    <meta charset="utf-8" />
+
+    <!–– jQuery and Bootstrap https://getbootstrap.com ––>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <!-- Twilio Sync SDK via CDN -->
+    
+    <script src="https://media.twiliocdn.com/sdk/js/sync/releases/0.11.5/twilio-sync.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Twilio Sync co-browsing example</h1>
+        <div class="card border-primary">
+            <div class="card-header text-info">
+                <span id="status">Connecting...</span>
+            </div>
+            <div class="card-header text-info">
+                Participants:<br />
+                <span id="participants">loading...</span>
+            </div>
+        </div>
+        <div class="card border-primary">
+            <div class="card-header text-info">
+                <div class="input-group mb-3">
+                    <input id="input-1" type="text" class="form-control cb-input" placeholder="Field 1">
+                    <div class="input-group-append">
+                      <span class="input-group-text" id="input-1-author">Edit me</span>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input id="input-2" type="text" class="form-control cb-input" placeholder="Field 2">
+                    <div class="input-group-append">
+                      <span class="input-group-text" id="input-2-author">Edit me</span>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input id="input-3" type="text" class="form-control cb-input" placeholder="Field 3">
+                    <div class="input-group-append">
+                      <span class="input-group-text" id="input-3-author">Edit me</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <span id="floating-badges"></span>
+    <span id="signals"></span>
+
+    <!–– Page scipts ––>
+    <script src="/cobrowsing.js"></script>
+    <script src="/cobrowsing-cursor.js"></script>
+    <script src="/cobrowsing-fields.js"></script>
+</body>
+</html>
