@@ -28,8 +28,8 @@ $(document).ready(async () => {
                 $('#status').text("Connected");
                 resolve(client);
             } else {
-                $('#status').text(`Error: ${error}`);
-                reject(error);
+                $('#status').text(`Error: expected connected status but got ${state}`);
+                reject(`Error: expected connected status but got ${state}`);
             }
         });
     });

@@ -17,16 +17,6 @@ $(document).on('sync-client-ready', async () => {
         return result;
     };
 
-    // Removes participants who are not active
-    const cleanStaleParticipants = async map => {
-        const participants = await getAllParticipants(map);
-        const now = new Date().getTime();
-        participants
-            .filter(p => p.key !== identity)
-            .filter(p => now - p.value.updated > 10000)
-            .forEach(p => map.remove(p.key));  
-    };
-
     // Badges selectors helpers
     const hashCode = str => str
         .split('')
@@ -85,8 +75,7 @@ $(document).on('sync-client-ready', async () => {
 
     // Adding existing participants
     const participants = await getAllParticipants(map);
-    participants.forEach(p => onParticipantAdded(p));
-    setInterval(() => cleanStaleParticipants(map), 5000);
+    participants.filter(p => new Date(p.dateExpires) > new Date()).forEach(p => onParticipantAdded(p));
 
     // Keeping track of online participants
     map.on('itemAdded', args => onParticipantAdded(args.item));
@@ -103,11 +92,13 @@ $(document).on('sync-client-ready', async () => {
     let mouseSignal = undefined;
     const updateOwnStatus = () => {
         map.set(identity, {
-            updated: new Date().getTime(),
             x: mouseX,
             y: mouseY,
             active: mouseOnPage,
             mouseSignal: mouseSignal
+        },
+        {
+            ttl: 60
         });
         updateOwnStateTimeout = null;
     };

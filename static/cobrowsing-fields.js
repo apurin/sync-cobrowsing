@@ -26,7 +26,9 @@ $(document).on('sync-client-ready', async () => {
     mapLocks.on('itemRemoved', args => $(`#${args.key}`).attr('readonly', false));
 
     // Read initial locks
-    getAllFields(mapLocks).then(locks => locks.forEach(lock => onFieldLock(lock)));
+    getAllFields(mapLocks).then(locks => locks
+        .filter(lock => new Date(lock.dateExpires) > new Date())
+        .forEach(lock => onFieldLock(lock)));
 
     // Updating map values
     const mapFields = await syncClient.map('fields');
@@ -55,7 +57,7 @@ $(document).on('sync-client-ready', async () => {
         if ($(`#${fieldId}`).attr('readonly')) {
             $(`#${fieldId}`).blur();
         } else {
-            mapLocks.set(fieldId, { author: identity });
+            mapLocks.set(fieldId, { author: identity }, { ttl: 60 });
         }        
     });
     $('.cb-input').focusout(event => {
@@ -85,6 +87,10 @@ $(document).on('sync-client-ready', async () => {
         $(`#${fieldId}-author`).text(`by me`);
     }
     $('.cb-input').on('input', event => {
+        // Renew lock
+        const fieldId = $(event.target).attr('id');
+        mapLocks.set(fieldId, { author: identity }, { ttl: 60 });
+
         if (updateTimeout) {
             clearTimeout(updateTimeout);
         }
