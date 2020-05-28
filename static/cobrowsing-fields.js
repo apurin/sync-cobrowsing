@@ -15,51 +15,79 @@ $(document).on('sync-client-ready', async () => {
         return result;
     };
 
-    const onFieldUpdate = item => {
-        if (item.value.author === identity) {
-            return;
+    // Locking fields focused
+    const mapLocks = await syncClient.map('fields-locked');
+    const onFieldLock = lock => {
+        if (lock.value.author !== identity) {
+            $(`#${lock.key}`).attr('readonly', true);
         }
-        $(`#${item.key}`).attr('readonly', item.value.locked);
-        $(`#${item.key}`).val(item.value.value);
-        $(`#${item.key}-author`).text(`by: ${item.value.author}`);
+    }
+    mapLocks.on('itemAdded', args => onFieldLock(args.item));
+    mapLocks.on('itemRemoved', args => $(`#${args.key}`).attr('readonly', false));
+
+    // Read initial locks
+    getAllFields(mapLocks).then(locks => locks.forEach(lock => onFieldLock(lock)));
+
+    // Updating map values
+    const mapFields = await syncClient.map('fields');
+    const onFieldUpdate = (item, force) => {
+        if (item.value.author !== identity || force) {
+            $(`#${item.key}`).val(item.value.value);
+            $(`#${item.key}-author`).text(`by: ${item.value.author}`);
+        }        
     };
+    const onFieldCleanup = fieldId => {
+        $(`#${fieldId}`).val("");
+        $(`#${fieldId}-author`).text(`Edit me`);      
+    };
+    mapFields.on('itemAdded', args => onFieldUpdate(args.item));
+    mapFields.on('itemUpdated', args => onFieldUpdate(args.item));
+    mapFields.on('itemRemoved', args => onFieldCleanup(args.key));
 
-    const map = await syncClient.map('fields');
-
-    map.on('itemAdded', args => onFieldUpdate(args.item));
-    map.on('itemUpdated', args => onFieldUpdate(args.item));
-
-    getAllFields(map).then(fields => fields.forEach(f => onFieldUpdate(f)));
-
+    // Read initial fields
+    getAllFields(mapFields).then(fields => fields.forEach(field => onFieldUpdate(field, true)));
+    
     // Updating field
-    $('.cb-input').focusin(event => {
-        console.log(`active`);
-        const fieldId = $(event.target).attr('id')
-        map.set(fieldId, {
-            author: identity,
-            locked: true,
-            value: $(event.target).val()
-        });
-        $(`#${fieldId}-author`).text(`by me`);
+    $('.cb-input').focusin(async event => {
+        const fieldId = $(event.target).attr('id');
+
+        // Field already locked
+        if ($(`#${fieldId}`).attr('readonly')) {
+            $(`#${fieldId}`).blur();
+        } else {
+            mapLocks.set(fieldId, { author: identity });
+        }        
     });
     $('.cb-input').focusout(event => {
-        console.log(`focusout`);
         const fieldId = $(event.target).attr('id');
-        map.set(fieldId, {
-            author: identity,
-            locked: false,
-            value: $(event.target).val()
-        });
-    });
-    $('.cb-input').on('input', event => {
-        console.log(`input`);
-        const fieldId = $(event.target).attr('id');
-        map.set(fieldId, {
-            author: identity,
-            locked: true,
-            value: $(event.target).val()
-        });
 
+        if ($(`#${fieldId}`).attr('readonly')) {
+            return;
+        }
+
+        mapLocks.remove(fieldId).catch(err => {});
+    });
+
+    let updateTimeout;
+    const updateField = event => {
+        updateTimeout = null;
+
+        const fieldId = $(event.target).attr('id');
+
+        if ($(event.target).val()) {
+            mapFields.set(fieldId, {
+                author: identity,
+                value: $(event.target).val()
+            });
+        } else {
+            mapFields.remove(fieldId).catch(err => {});
+        }
         $(`#${fieldId}-author`).text(`by me`);
+    }
+    $('.cb-input').on('input', event => {
+        if (updateTimeout) {
+            clearTimeout(updateTimeout);
+        }
+        updateTimeout = setTimeout(() => updateField(event), 500);
     });
 });

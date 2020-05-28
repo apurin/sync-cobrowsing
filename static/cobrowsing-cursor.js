@@ -77,7 +77,6 @@ $(document).on('sync-client-ready', async () => {
             }
             signalSelector.css({ left: p.value.mouseSignal.x - 10, top: p.value.mouseSignal.y - 10 });
         } else if (signalDotExists) {
-            console.log('Removing signal');
             signalSelector.remove();
         }
     };
