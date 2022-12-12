@@ -14,7 +14,7 @@
   "author": "Anton Purin",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "ngrok": "^3.2.7",
     "twilio": "^3.39.1"
   }
